@@ -38,8 +38,7 @@ Spring Bootで画面を表示する場合、基本的には次のような構成
 
 ```mermaid
 flowchart LR
-    User[ブラウザー] -->|HTTPリクエスト| D[DispatcherServlet]
-    D --> C[Controller]
+    User[ブラウザー] -->|HTTPリクエスト| C[Controller]
     C --> S[Service]
     S --> R[Repository]
     R --> DB[(データベース)]
@@ -50,6 +49,9 @@ flowchart LR
     M --> V[View<br/>Thymeleafテンプレート]
     V -->|HTMLレスポンス| User
 ```
+
+DispatcherServletは、Spring MVCでHTTPリクエストを受け取り、URLに対応するControllerへ処理を渡す入口です。
+Spring Bootでは自動設定されるため、通常は自分で実装する必要はありません。
 
 Spring MVCでは、ControllerがRepositoryを直接呼び出すのではなく、間にServiceを置く構成がよく使われます。
 
@@ -358,14 +360,12 @@ Viewでは `${memos}` として参照できます。
 ```mermaid
 sequenceDiagram
     actor User as ブラウザー
-    participant D as DispatcherServlet
     participant C as MemoController
     participant S as MemoService
     participant R as MemoRepository
     participant V as memos.html
 
-    User->>D: GET /memos
-    D->>C: showMemos()
+    User->>C: GET /memos
     C->>S: findAll()
     S->>R: findAll()
     R-->>S: メモ一覧
@@ -373,21 +373,13 @@ sequenceDiagram
     C->>V: Modelにmemosを渡す
     V-->>User: HTMLを表示
 
-    User->>D: POST /memos
-    D->>C: addMemo(text)
+    User->>C: POST /memos
     C->>S: addMemo(text)
     S->>R: save(text)
     R-->>S: 保存完了
     S-->>C: 保存結果
     C-->>User: redirect:/memos
 ```
-
-### DispatcherServletとは
-
-`DispatcherServlet`は、Spring MVCの入口になる仕組みです。
-
-すべてのリクエストを受け取り、URLとHTTPメソッドに合うControllerのメソッドへ処理を振り分けます。
-通常はSpring Bootが設定してくれるため、自分でServletを作成する必要はありません。
 
 ## 10. 必要な依存関係の例
 
@@ -499,8 +491,6 @@ Spring BootでMVCを構成すると、処理の流れは次のようになりま
 
 ```text
 ブラウザー
-  ↓
-DispatcherServlet
   ↓
 Controller
   ↓
