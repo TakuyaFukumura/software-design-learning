@@ -66,6 +66,40 @@ View       = HTML画面
 厳密には、ServiceとRepositoryはMVCの3要素に直接含まれる名前ではありません。
 しかし、Spring BootのアプリではModel側の処理を整理するために、ServiceやRepositoryを分けることが一般的です。
 
+### MVCとクラスの対応関係
+
+Spring Bootでは、MVCの3種類がそれぞれ1つのクラスになるとは限りません。
+実際のアプリでは、次のように対応させて考えると分かりやすくなります。
+
+| MVC | Spring Bootで対応するもの | 主なアノテーション・場所 | 担当すること |
+| --- | --- | --- | --- |
+| **Model** | Model・Entity、Service、Repository | `model/`、`service/`、`repository/` | データを表す、ルールを実行する、データを保存・取得する |
+| **View** | Thymeleafテンプレート | `src/main/resources/templates/` | ModelのデータをHTMLとして表示する |
+| **Controller** | Controllerクラス | `@Controller`、`@RestController` | HTTPリクエストを受け取り、処理を呼び出し、ViewやJSONを返す |
+
+Model側は役割が大きいため、さらにクラスを分けます。
+
+| クラス | Model内での役割 | 例 |
+| --- | --- | --- |
+| Model・Entity | データの形や状態を表す | `Memo` |
+| Service | アプリケーションのルールや処理をまとめる | `MemoService` |
+| Repository | データベースや保存先とやり取りする | `MemoRepository` |
+
+したがって、メモアプリの対応関係は次のようになります。
+
+```text
+Model
+├─ Memo.java              = メモのデータ
+├─ MemoService.java       = メモに関する処理やルール
+└─ MemoRepository.java    = メモの保存・取得
+
+View
+└─ memos.html             = メモ一覧画面
+
+Controller
+└─ MemoController.java    = リクエストを受け、ModelとViewをつなぐ
+```
+
 ## 4. フォルダー構成の例
 
 ```text
